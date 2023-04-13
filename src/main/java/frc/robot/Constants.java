@@ -15,19 +15,9 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import frc.robot.Constants.Drive.Dims;
-import frc.robot.commands.ScoreCommand.ScoreStep;
-import frc.robot.subsystems.ArmSubsystem.ArmState;
 import frc.robot.subsystems.NetworkWatchdogSubsystem.IPv4;
-import frc.robot.subsystems.OuttakeSubsystem;
-import frc.robot.subsystems.OuttakeSubsystem.OuttakeDetails;
 import frc.robot.subsystems.RGBSubsystem.RGBColor;
-import frc.util.NodeSelectorUtility.Height;
-import frc.util.NodeSelectorUtility.NodeType;
-import frc.util.NodeSelectorUtility.ScoreTypeIdentifier;
-import frc.util.pathing.FieldObstructionMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @SuppressWarnings("java:S1118")
 /**
@@ -150,85 +140,6 @@ public final class Constants {
     }
   }
 
-  public static final class Arm {
-    public static final class Ports {
-      public static final int ARM_MOTOR_PORT = 16;
-      public static final int TELESCOPING_MOTOR_PORT = 17;
-      public static final int ENCODER_PORT = 28;
-    }
-
-    public static final double GRAVITY_CONTROL_PERCENT = 0.07;
-
-    public static final double ANGULAR_OFFSET = -8.75;
-
-    public static final class Setpoints {
-
-      public static final ArmState GROUND_INTAKE = new ArmState(-45, 19);
-
-      public static final ArmState SHELF_INTAKE = new ArmState(95, 0);
-
-      public static final ArmState STOWED = new ArmState(0, Arm.Setpoints.Extensions.MIN_EXTENSION);
-
-      public static final class Extensions {
-        public static final double MAX_EXTENSION = 20.7;
-        public static final double MIN_EXTENSION = 0.4;
-      }
-    }
-
-    public static final double EXTENSION_STATOR_LIMIT = 42;
-
-    public static final double ZERO_RETRACTION_PERCENT = -0.14;
-    public static final int TICKS = 2048;
-    public static final int TELESCOPING_ARM_GEAR_RATIO = 3;
-    public static final double SPOOL_CIRCUMFERENCE = 1.5 * Math.PI;
-
-    public static final class Thresholds {
-      /**
-       * These thresholds, unless otherwise specified in a doc comment, apply to the positive and
-       * negative sign of their angle in degrees
-       */
-      public static final class Angles {
-        public static final double BACKWARD_UNSAFE_EXTENSION_ANGLE_THRESHOLD =
-            -35; // FIXME: real value needed
-        public static final double FORWARD_UNSAFE_EXTENSION_ANGLE_THRESHOLD =
-            20; // FIXME: real value needed
-        public static final double UPPER_ANGLE_LIMIT = 120;
-        public static final double EPSILON = 5;
-      }
-
-      public static final class Extensions {
-        /**
-         * The amount of additional extension from min extension to treat as fully retracted for
-         * safety purposes
-         */
-        public static final double FULLY_RETRACTED_INCHES_THRESHOLD = 1;
-
-        public static final double EPSILON = .5;
-      }
-    }
-  }
-
-  public static final Map<ScoreTypeIdentifier, List<ScoreStep>> SCORE_STEP_MAP =
-      Map.of(
-          NodeType.CONE.atHeight(Height.HIGH),
-              List.of(
-                  new ScoreStep(new ArmState(115, Arm.Setpoints.Extensions.MIN_EXTENSION)),
-                  new ScoreStep(new ArmState(115, Arm.Setpoints.Extensions.MAX_EXTENSION))
-                      .canWaitHere(),
-                  new ScoreStep(new ArmState(87, Arm.Setpoints.Extensions.MAX_EXTENSION))
-                      .canWaitHere(),
-                  new ScoreStep(
-                      new ArmState(87, Arm.Setpoints.Extensions.MIN_EXTENSION),
-                      OuttakeSubsystem.Modes.OUTTAKE)),
-          NodeType.CONE.atHeight(Height.MID),
-              List.of(
-                  new ScoreStep(new ArmState(100, Arm.Setpoints.Extensions.MIN_EXTENSION)),
-                  new ScoreStep(new ArmState(100, 4.8)).canWaitHere(),
-                  new ScoreStep(new ArmState(75, 4.8)).canWaitHere(),
-                  new ScoreStep(
-                      new ArmState(80, Arm.Setpoints.Extensions.MIN_EXTENSION),
-                      OuttakeSubsystem.Modes.OUTTAKE)));
-
   public static final class Vision {
 
     public static final class FrontCam {
@@ -297,68 +208,6 @@ public final class Constants {
     public static final double DRIVE_TO_POSE_XY_ERROR_MARGIN_METERS = .05;
 
     public static final double DRIVE_TO_POSE_THETA_ERROR_MARGIN_DEGREES = 2;
-  }
-
-  public static final class Pathing {
-    /** The size in meters of a given cell for pathfinding */
-    public static final double CELL_SIZE_METERS = 0.1;
-
-    public static final int CELL_X_MAX =
-        (int) Math.ceil(FieldObstructionMap.FIELD_LENGTH / Pathing.CELL_SIZE_METERS);
-    public static final int CELL_Y_MAX =
-        (int) Math.ceil(FieldObstructionMap.FIELD_HEIGHT / Pathing.CELL_SIZE_METERS);
-
-    /**
-     * this variable is badly named, it refers to half the width decimated to the cell grid. coords
-     * that require going within this distance will be very expensive for pathfinding.
-     */
-    public static final int ROBOT_RADIUS_DANGER_CELLS =
-        // using floor is not a bug, we want to be able to drive up to the edge of the cell if
-        // needed. this might not work too hot for other robot sizes, but for our size down is much
-        // more reasonable than up for .1m cells
-        // adding one serves to reduce the risk of a spline clipping something
-        (int) Math.floor((Dims.BUMPER_WIDTH_METERS / 2) / Pathing.CELL_SIZE_METERS) + 1;
-
-    /**
-     * grid coords that require going within this distance of field elements will be unavailable for
-     * pathfinding. subtracting one serves to make this number accurate because we added one
-     * earlier.
-     */
-    public static final int ROBOT_RADIUS_COLLISION_CELLS = ROBOT_RADIUS_DANGER_CELLS - 2;
-
-    public static final double CRITICAL_POINT_DIVERGENCE_THRESHOLD = 6;
-
-    public static final int PATHFINDING_HEURISTIC_CONSTANT = 1;
-
-    public static final double RESPECT_CURRENT_VELOCITY_THRESHOLD_MS = .2;
-
-    public static final double ANTICIPATED_PATH_SOLVE_TIME_SECONDS = 1;
-
-    public static final class Costs {
-      public static final int CARDINAL = 2;
-      public static final int DIAGONAL = 3;
-      public static final int DANGER_MULTIPLIER = 50;
-    }
-  }
-
-  public static final class Outtake {
-    public static final class Ports {
-      public static final int OUTTAKE_MOTOR = 8; // Placeholder value
-    }
-
-    public static final class OuttakeModes {
-      public static final OuttakeDetails HOLD =
-          new OuttakeDetails(0.1, Optional.empty(), Optional.empty());
-
-      public static final OuttakeDetails INTAKE =
-          new OuttakeDetails(0.7, Optional.of(new OuttakeDetails.StatorLimit(75)), Optional.of(2d));
-
-      public static final OuttakeDetails OUTTAKE =
-          new OuttakeDetails(-0.2, Optional.empty(), Optional.of(2d));
-
-      public static final OuttakeDetails OFF =
-          new OuttakeDetails(0.0, Optional.empty(), Optional.empty());
-    }
   }
 
   public static final class NetworkWatchdog {
