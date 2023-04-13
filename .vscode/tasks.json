@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "gradle",
+      "id": "gradlebuild",
+      "script": "build",
+      "description": "Assembles and tests this project.",
+      "group": "test",
+      "project": "FRC-2023",
+      "buildFile": "${workspaceFolder}/build.gradle",
+      "rootProject": "FRC-2023",
+      "projectFolder": "${workspaceFolder}",
+      "workspaceFolder": "${workspaceFolder}",
+      "args": "",
+      "javaDebug": false,
+      "problemMatcher": ["$gradle"],
+      "label": "gradle: build"
+    },
+    {
+      "type": "gradle",
+      "id": "gradledeploy",
+      "script": "deploy",
+      "description": "Deploy all artifacts on all targets",
+      "group": "build",
+      "project": "FRC-2023",
+      "buildFile": "${workspaceFolder}/build.gradle",
+      "rootProject": "FRC-2023",
+      "projectFolder": "${workspaceFolder}",
+      "workspaceFolder": "${workspaceFolder}",
+      "args": "",
+      "javaDebug": false,
+      "problemMatcher": ["$gradle"],
+      "label": "gradle: deploy"
+    }
+  ]
+}
