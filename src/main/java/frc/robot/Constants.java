@@ -29,6 +29,24 @@ import java.util.List;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static final class Arm {
+    public static final class Ports {
+      public static final int ARM_MOTOR_PORT = 16;
+      public static final int TELESCOPING_MOTOR_PORT = 17;
+      public static final int ENCODER_PORT = 28;
+    }
+
+    public static final class Extensions {
+      public static final double MAX_EXTENSION = 20.7;
+      public static final double MIN_EXTENSION = 0.4;
+    }
+
+    public static final double GRAVITY_CONTROL_PERCENT = 0.07;
+    public static final double ANGULAR_OFFSET = -8.75;
+    public static final int TICKS = 2048;
+    public static final int TELESCOPING_ARM_GEAR_RATIO = 3;
+  }
+
   public static final class Drive {
     // max voltage delivered to drivebase
     // supposedly useful to limit speed for testing

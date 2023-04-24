@@ -40,13 +40,9 @@
     "AHRS",
     "apriltag",
     "cancoder",
-    "Chebyshev",
-    "CONTROLPOINT",
     "Deadband",
     "deadbanded",
     "drivebase",
-    "fkirc",
-    "gradlew",
     "Hardstop",
     "Holonomic",
     "LEDS",
@@ -54,10 +50,6 @@
     "navx",
     "Odometry",
     "oshi",
-    "pathfinding",
-    "pathing",
-    "oshi",
-    "PHOTONVISION",
     "POWERCYCLE",
     "repath",
     "REPATHS",
@@ -65,7 +57,6 @@
     "Setpoints",
     "teleop",
     "teleoperated",
-    "temurin",
     "TRACKWIDTH"
   ]
 }
