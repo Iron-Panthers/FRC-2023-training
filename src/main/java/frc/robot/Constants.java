@@ -41,6 +41,8 @@ public final class Constants {
       public static final double MIN_EXTENSION = 0.4;
     }
 
+    public static final double EXTENSION_STATOR_LIMIT = 42;
+
     public static final double GRAVITY_CONTROL_PERCENT = 0.07;
     public static final double ANGULAR_OFFSET = -8.75;
     public static final int TICKS = 2048;
