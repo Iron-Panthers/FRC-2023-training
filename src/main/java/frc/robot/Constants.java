@@ -29,6 +29,13 @@ import java.util.List;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static final class GroundIntake {
+    public static final double HOLD = .5;
+    public static final double INTAKE = .8;
+    public static final double OUTTAKE = -.8;
+    public static final double OFF = 0;
+    public static final int OUTTAKE_MOTOR = 1;
+  }
   public static final class Drive {
     // max voltage delivered to drivebase
     // supposedly useful to limit speed for testing
