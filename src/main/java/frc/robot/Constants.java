@@ -30,11 +30,10 @@ import java.util.List;
  */
 public final class Constants {
   public static final class GroundIntake {
-    public static final double HOLD = .5;
-    public static final double INTAKE = .8;
-    public static final double OUTTAKE = -.8;
+    public static final double ROLLERS_POWER = -.8;
     public static final double OFF = 0;
-    public static final int OUTTAKE_MOTOR = 1;
+   public static final int ROLLERS_MOTOR = 1;
+   public static final int ARM_MOTOR = 2;
   }
   public static final class Drive {
     // max voltage delivered to drivebase

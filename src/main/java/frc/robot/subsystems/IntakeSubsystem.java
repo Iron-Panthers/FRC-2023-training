@@ -6,44 +6,54 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class IntakeSubsystem extends SubsystemBase {
   /** Creates a new IntakeSubsystem. */
-  private final TalonFX outake;
+  private final TalonFX rollers;
+  private final TalonFX arm;
+  private PIDController pidController;
+  private double desiredAngle;
+  private IntakeModes mode;  
+  private ShuffleboardTab intakeShuffleboard = Shuffleboard.getTab("Intake");
+
+
+//constructor
+  public IntakeSubsystem() {
+    rollers = new TalonFX(Constants.GroundIntake.ROLLERS_MOTOR);
+    arm = new TalonFX(Constants.GroundIntake.ARM_MOTOR);
+    //current mode of subsytem
+    IntakeModes mode = IntakeModes.OFF;
+    pidController = new PIDController(0.005, 0, 0.00017);
+
+
+    intakeShuffleboard.addNumber("Arm Angle", arm::getSelectedSensorPosition);
+  }
 
   public enum IntakeModes{
     INTAKE,
-    HOLD, 
-    OUTAKE,
     OFF
   }
 
-  //current mode of subsytem
-  private IntakeModes mode = IntakeModes.OFF;
+  public double getAngle(){
+    return arm.getSelectedSensorPosition();
+  }
 
-  //hold in mode, keep from transitioning
-  private boolean modeLocked = false;
+  public double getTargetAngle(){
+    return desiredAngle;
+  }
+
+  public void setAngle(double desiredAngle){
+    this.desiredAngle = desiredAngle;
+  }
 
   //get current mode
   public IntakeModes getMode(){
     return mode;
-  }
-  //gets boolean for mode locked
-  public boolean getModeLocked(){
-  return modeLocked;
-  }
-
-  public double timeSinceModeTransition(){
-    return Timer.getFPGATimestamp() - timeOfModeTransition;
-  }
-
-  public void setModeIfTransitionGreater(double duration, IntakeModes mode){
-    if(timeSinceModeTransition() >= duration){
-      setMode(mode);
-    }
   }
 
   //sets the current mode
@@ -51,31 +61,19 @@ public class IntakeSubsystem extends SubsystemBase {
     this.mode = mode;
   }
 
-  public IntakeSubsystem() {
-    outake = new TalonFX(Constants.GroundIntake.OUTTAKE_MOTOR);
-  }
-
   public void intakePeriodic(){
-    outake.set(TalonFXControlMode.Velocity, Constants.GroundIntake.INTAKE);
-  }
-
-  public void holdPeriodic(){
-    outake.set(TalonFXControlMode.Velocity, Constants.GroundIntake.HOLD);
-  }
-
-  public void outakePeriodic(){
-    outake.set(TalonFXControlMode.Velocity, Constants.GroundIntake.OUTTAKE);
+    rollers.set(TalonFXControlMode.Velocity, Constants.GroundIntake.ROLLERS_POWER);
+    
   }
 
   public void offPeriodic(){
-    outake.set(TalonFXControlMode.Velocity, Constants.GroundIntake.OFF);
-  }
+    rollers.set(TalonFXControlMode.Velocity, Constants.GroundIntake.OFF);
 
+  }
  
   @Override
   public void periodic() {
   
-    
     
     // This method will be called once per scheduler run
   }
