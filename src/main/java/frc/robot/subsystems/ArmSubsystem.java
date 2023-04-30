@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.Arm;
 
 public class ArmSubsystem extends SubsystemBase {
   private double desiredAngle;
@@ -26,6 +27,8 @@ public class ArmSubsystem extends SubsystemBase {
     RETRACT,
     HOLD
   }
+
+  public static record ArmState(double angle, double extension) {}
 
   public ArmSubsystem() {
     telescopingMotor = new TalonFX(Constants.Arm.Ports.TELESCOPING_MOTOR_PORT);
@@ -48,16 +51,20 @@ public class ArmSubsystem extends SubsystemBase {
             0.25));
   }
 
-  public void manualPeriodic(double speed) {
-    telescopingMotor.set(TalonFXControlMode.PercentOutput, speed);
-  }
-
   public void setMode(ArmModes mode) {
     this.mode = mode;
   }
 
   public double updateFilterOutput() {
     return lowPassFilter.calculate(telescopingMotor.getStatorCurrent());
+  }
+
+  private static double ticksLengthToInches(double ticks) {
+    return ((ticks / Arm.TICKS) / Arm.TELESCOPING_ARM_GEAR_RATIO) * Arm.SPOOL_CIRCUMFERENCE;
+  }
+
+  public double getCurrentExtensionInches() {
+    return ticksLengthToInches(telescopingMotor.getSelectedSensorPosition());
   }
 
   public void applyMode() {
@@ -69,12 +76,14 @@ public class ArmSubsystem extends SubsystemBase {
       case HOLD:
         telescopingMotor.setNeutralMode(NeutralMode.Brake);
       default:
-        manualPeriodic(0);
+        telescopingMotor.setNeutralMode(NeutralMode.Brake);
     }
   }
 
   public ArmModes advanceMode(ArmModes currentMode) {
-    if (filterOutput >= Constants.Arm.EXTENSION_STATOR_LIMIT) {
+    if (filterOutput >= Constants.Arm.EXTENSION_STATOR_LIMIT
+        || getCurrentExtensionInches() == Constants.Arm.Setpoints.GROUND_INTAKE.extension
+        || getCurrentExtensionInches() == Constants.Arm.Setpoints.SHELF_INTAKE.extension) {
       return ArmModes.HOLD;
     } else if (currentMode == ArmModes.EXTEND) {
       return ArmModes.EXTEND;
@@ -83,17 +92,6 @@ public class ArmSubsystem extends SubsystemBase {
     } else {
       return ArmModes.HOLD;
     }
-
-    /*
-    switch (currentMode) {
-      case EXTEND:
-        return ArmModes.EXTEND;
-      case RETRACT:
-        return ArmModes.RETRACT;
-      default:
-        return ArmModes.HOLD;
-    }
-    */
   }
 
   public void periodic() {

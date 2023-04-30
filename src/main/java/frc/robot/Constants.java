@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import frc.robot.Constants.Drive.Dims;
+import frc.robot.subsystems.ArmSubsystem.ArmState;
 import frc.robot.subsystems.NetworkWatchdogSubsystem.IPv4;
 import frc.robot.subsystems.RGBSubsystem.RGBColor;
 import java.util.List;
@@ -36,17 +37,28 @@ public final class Constants {
       public static final int ENCODER_PORT = 28;
     }
 
-    public static final class Extensions {
-      public static final double MAX_EXTENSION = 20.7;
-      public static final double MIN_EXTENSION = 0.4;
+    public static final double GRAVITY_CONTROL_PERCENT = 0.07;
+
+    public static final double ANGULAR_OFFSET = -8.75;
+
+    public static final class Setpoints {
+
+      public static final ArmState GROUND_INTAKE = new ArmState(-45, 19);
+
+      public static final ArmState SHELF_INTAKE = new ArmState(95, 0);
+
+      public static final class Extensions {
+        public static final double MAX_EXTENSION = 20.7;
+        public static final double MIN_EXTENSION = 0.4;
+      }
     }
 
     public static final double EXTENSION_STATOR_LIMIT = 42;
 
-    public static final double GRAVITY_CONTROL_PERCENT = 0.07;
-    public static final double ANGULAR_OFFSET = -8.75;
+    public static final double ZERO_RETRACTION_PERCENT = -0.14;
     public static final int TICKS = 2048;
     public static final int TELESCOPING_ARM_GEAR_RATIO = 3;
+    public static final double SPOOL_CIRCUMFERENCE = 1.5 * Math.PI;
   }
 
   public static final class Drive {
